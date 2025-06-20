@@ -1,8 +1,11 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import Link from "next/link"
+import dynamic from "next/dynamic"
 import { ArrowRight, Sparkles, Shield, Bot, Coins, FileText, Users } from "lucide-react"
+
+const SplineViewer = dynamic(() => import("@/components/spline-viewer"), { ssr: false })
 
 const features = [
   {
@@ -49,68 +52,32 @@ const features = [
   },
 ]
 
-// Simple background component without any external dependencies
-function SimpleBackground() {
-  return (
-    <div className="fixed inset-0 -z-10">
-      <div className="absolute inset-0 bg-gradient-to-br from-pure-black via-dark-purple/10 to-pure-black" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(139,92,246,0.15),transparent_50%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(168,85,247,0.1),transparent_50%)]" />
-
-      {/* Simple CSS particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(15)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-bright-purple/30 rounded-full animate-pulse"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${2 + Math.random() * 2}s`,
-            }}
-          />
-        ))}
-      </div>
-    </div>
-  )
-}
-
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
+  const featuresRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
+  const handleExploreClick = () => {
+    featuresRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
   if (!mounted) {
     return (
       <div className="relative min-h-screen bg-pure-black">
-        <SimpleBackground />
-        <div className="relative min-h-screen flex items-center justify-center px-6">
-          <div className="text-center max-w-6xl mx-auto">
-            <div className="animate-pulse space-y-8">
-              <div className="h-8 bg-gray-800/50 rounded-full w-64 mx-auto"></div>
-              <div className="h-20 bg-gray-800/50 rounded w-full"></div>
-              <div className="h-6 bg-gray-800/50 rounded w-3/4 mx-auto"></div>
-              <div className="flex justify-center space-x-4">
-                <div className="h-12 bg-gray-800/50 rounded-full w-32"></div>
-                <div className="h-12 bg-gray-800/50 rounded-full w-32"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Placeholder for loading state */}
       </div>
     )
   }
 
   return (
-    <div className="relative min-h-screen bg-pure-black">
-      <SimpleBackground />
-
+    <div className="bg-pure-black">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center px-6 pt-24">
-        <div className="text-center max-w-6xl mx-auto animate-fade-in">
+      <section className="relative min-h-screen grid grid-cols-1 lg:grid-cols-2 items-center gap-8 px-6 lg:px-12">
+        {/* Left Content */}
+        <div className="text-left animate-fade-in">
           <div className="mb-8">
             <div className="inline-flex items-center space-x-2 glass rounded-full px-6 py-3 mb-8 transition-all duration-300 ease-out purple-glow">
               <Sparkles className="w-5 h-5 text-bright-purple" />
@@ -118,31 +85,42 @@ export default function HomePage() {
             </div>
           </div>
 
-          <h1 className="web3wise-title text-6xl md:text-8xl lg:text-9xl font-bold mb-8 leading-tight">
+          <h1 className="web3wise-title text-6xl md:text-8xl font-bold mb-8 leading-tight">
             <span className="bg-gradient-to-r from-pure-white via-bright-purple to-light-purple bg-clip-text text-transparent">
               Web3Wise
             </span>
           </h1>
 
-          <p className="text-2xl md:text-3xl text-gray-light mb-12 max-w-4xl mx-auto leading-relaxed font-content">
+          <p className="text-2xl md:text-3xl text-gray-light mb-12 max-w-2xl leading-relaxed font-content">
             Premium Web3 consultancy platform with AI-powered tools, expert guidance, and sophisticated design
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
-            <button className="group bg-gradient-to-r from-bright-purple to-light-purple text-pure-white px-12 py-4 rounded-full font-bold text-xl flex items-center space-x-3 shadow-xl shadow-bright-purple/25 purple-glow hover:scale-105 hover:shadow-2xl hover:shadow-bright-purple/40 transition-all duration-300 font-content">
+          <div className="flex flex-col sm:flex-row items-center justify-start space-y-4 sm:space-y-0 sm:space-x-6">
+            <button
+              className="group bg-gradient-to-r from-bright-purple to-light-purple text-pure-white px-12 py-4 rounded-full font-bold text-xl flex items-center space-x-3 shadow-xl shadow-bright-purple/25 purple-glow hover:scale-105 hover:shadow-2xl hover:shadow-bright-purple/40 transition-all duration-300 font-content"
+              onClick={handleExploreClick}
+            >
               <span>Explore Platform</span>
               <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform duration-200" />
             </button>
 
-            <button className="glass glass-hover text-pure-white px-12 py-4 rounded-full font-bold text-xl purple-glow-hover hover:scale-105 transition-all duration-300 font-content">
+            <button
+              className="glass glass-hover text-pure-white px-12 py-4 rounded-full font-bold text-xl purple-glow-hover hover:scale-105 transition-all duration-300 font-content"
+              onClick={() => window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank')}
+            >
               Watch Demo
             </button>
           </div>
         </div>
+        
+        {/* Right 3D Model */}
+        <div className="relative w-full h-[500px] lg:h-full">
+           <SplineViewer scene="https://prod.spline.design/FQAMj9-0GcD4gd8R/scene.splinecode" background="#000000" />
+        </div>
       </section>
 
       {/* Features Grid */}
-      <section className="relative py-20 px-6">
+      <section ref={featuresRef} className="relative py-20 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-5xl md:text-6xl font-bold mb-6 font-heading">

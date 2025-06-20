@@ -3,8 +3,7 @@
 import { motion } from "framer-motion"
 import { useState, useEffect, useRef } from "react"
 import { MessageSquare, Bot, Terminal, Send, Zap, Users, Clock } from "lucide-react"
-import { Canvas } from "@react-three/fiber"
-import { Float, Text3D, OrbitControls } from "@react-three/drei"
+import SplineViewer from "@/components/spline-viewer"
 import { Suspense } from "react"
 
 function BotAvatar3D() {
@@ -68,6 +67,9 @@ export default function BotSupportPage() {
   const [chatInput, setChatInput] = useState("")
   const [isTyping, setIsTyping] = useState(false)
   const terminalRef = useRef<HTMLDivElement>(null)
+  const [messages, setMessages] = useState([
+    { from: "bot", text: "Hello! I am Web3Wise AI. How can I assist you today?" },
+  ])
 
   // Terminal animation
   useEffect(() => {
@@ -106,68 +108,58 @@ export default function BotSupportPage() {
   }, [])
 
   const handleSendMessage = () => {
-    if (chatInput.trim()) {
-      setIsTyping(true)
-      setTimeout(() => {
-        setIsTyping(false)
-        setChatInput("")
-      }, 2000)
-    }
+    if (chatInput.trim() === "") return
+    const newMessages = [...messages, { from: "user", text: chatInput }]
+    setMessages(newMessages)
+    setChatInput("")
+    // Simulate bot response
+    setTimeout(() => {
+      setMessages([...newMessages, { from: "bot", text: "Thinking..." }])
+    }, 1000)
   }
 
   return (
-    <div className="relative min-h-screen pt-24 bg-pure-black">
+    <div className="relative min-h-screen pt-24 bg-pure-black text-pure-white">
       {/* Hero Section */}
       <section className="relative py-20 px-6">
-        <div className="max-w-7xl mx-auto text-center">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Left Content */}
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="mb-8"
           >
-            <div className="inline-flex items-center space-x-2 glass rounded-full px-6 py-3 mb-8 purple-glow">
-              <Bot className="w-5 h-5 text-bright-purple" />
-              <span className="text-bright-purple font-medium">AI-Powered 24/7 Support</span>
+            <div className="mb-8">
+              <div className="inline-flex items-center space-x-2 glass rounded-full px-6 py-3 mb-8 purple-glow">
+                <Bot className="w-5 h-5 text-bright-purple" />
+                <span className="text-bright-purple font-medium">AI-Powered Bot Support</span>
+              </div>
             </div>
+
+            <h1 className="text-5xl md:text-7xl font-bold mb-8">
+              <span className="bg-gradient-to-r from-bright-purple to-light-purple bg-clip-text text-transparent">
+                Instant Support
+              </span>
+            </h1>
+
+            <p className="text-xl text-gray-light max-w-xl mb-12">
+              Our AI assistant, powered by the latest models, provides instant, intelligent support for all your Web3
+              questions.
+            </p>
           </motion.div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="bot-support-title gradient-title text-5xl md:text-7xl font-bold mb-8"
+          {/* Right 3D Model */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.0, delay: 0.2 }}
+            className="relative w-full h-[400px] lg:h-[500px]"
           >
-            <span className="bg-gradient-to-r from-bright-purple to-light-purple bg-clip-text text-transparent">
-              Bot Support
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-xl text-gray-light max-w-3xl mx-auto mb-12"
-          >
-            Get instant Web3 guidance through our intelligent AI assistant, available 24/7 via Telegram and web
-            interface
-          </motion.p>
+            <Suspense fallback={<div className="w-full h-full flex items-center justify-center">Loading 3D Model...</div>}>
+              <SplineViewer scene="https://prod.spline.design/xzU3XjMvmV2t5Xy0/scene.splinecode" />
+            </Suspense>
+          </motion.div>
         </div>
-      </section>
-
-      {/* 3D Bot Avatar */}
-      <section className="relative h-64 mb-20">
-        <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
-          <Suspense fallback={null}>
-            <ambientLight intensity={0.3} />
-            <pointLight position={[10, 10, 10]} intensity={1} color="#8B5CF6" />
-            <pointLight position={[-10, -10, -10]} intensity={0.5} color="#A855F7" />
-
-            <BotAvatar3D />
-
-            <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={2} />
-          </Suspense>
-        </Canvas>
       </section>
 
       {/* Terminal and Chat Interface */}
@@ -268,23 +260,23 @@ export default function BotSupportPage() {
 
                 {/* Chat Messages */}
                 <div className="p-6 h-80 overflow-y-auto space-y-4">
-                  {chatMessages.slice(0, currentMessage + 1).map((msg, index) => (
+                  {messages.map((msg, index) => (
                     <motion.div
                       key={index}
                       initial={{ opacity: 0, y: 20, scale: 0.9 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       transition={{ duration: 0.4, delay: index * 0.1 }}
-                      className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}
+                      className={`flex ${msg.from === "user" ? "justify-end" : "justify-start"}`}
                     >
                       <div className="max-w-xs">
                         <div
                           className={`px-4 py-3 rounded-2xl ${
-                            msg.type === "user"
+                            msg.from === "user"
                               ? "bg-gradient-to-r from-bright-purple to-light-purple text-pure-white ml-4"
                               : "glass text-gray-light mr-4"
                           }`}
                         >
-                          <p className="text-sm">{msg.message}</p>
+                          <p className="text-sm">{msg.text}</p>
                         </div>
                         <p className="text-xs text-gray-light mt-1 px-2">{msg.time}</p>
                       </div>
@@ -431,6 +423,7 @@ export default function BotSupportPage() {
                 className="bg-gradient-to-r from-bright-purple to-light-purple text-pure-white px-8 py-4 rounded-full font-bold text-lg hover:shadow-lg hover:shadow-bright-purple/25 transition-all duration-300 purple-pulse"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => window.open('https://t.me/web3wise_bot', '_blank')}
               >
                 <MessageSquare className="w-5 h-5 inline mr-2" />
                 Start on Telegram
@@ -440,6 +433,7 @@ export default function BotSupportPage() {
                 className="glass glass-hover text-pure-white px-8 py-4 rounded-full font-bold text-lg transition-all duration-300"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => alert('Web chat coming soon!')}
               >
                 Try Web Interface
               </motion.button>

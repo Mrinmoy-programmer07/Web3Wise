@@ -311,6 +311,7 @@ export default function ValidatorsPage() {
                 className="bg-gradient-to-r from-bright-purple to-light-purple text-pure-white px-8 py-3 rounded-full font-semibold hover:shadow-lg hover:shadow-bright-purple/25 transition-all duration-300"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => window.open('/sample-report.pdf', '_blank')}
               >
                 <FileText className="w-5 h-5 inline mr-2" />
                 Download Report
@@ -320,6 +321,7 @@ export default function ValidatorsPage() {
                 className="glass glass-hover text-pure-white px-8 py-3 rounded-full font-semibold transition-all duration-300"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => window.open('mailto:consult@web3wise.com?subject=Book%20Expert%20Review')}
               >
                 Book Expert Review
               </motion.button>

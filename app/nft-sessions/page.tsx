@@ -121,27 +121,7 @@ export default function NFTSessionsPage() {
       </section>
 
       {/* 3D NFT Showcase */}
-      <section className="relative h-96 mb-20">
-        <Canvas camera={{ position: [0, 0, 8], fov: 75 }}>
-          <Suspense fallback={null}>
-            <ambientLight intensity={0.3} />
-            <pointLight position={[10, 10, 10]} intensity={1} color="#8B5CF6" />
-            <pointLight position={[-10, -10, -10]} intensity={0.5} color="#A855F7" />
-
-            <group position={[-4, 0, 0]}>
-              <NFTBadge3D title="DeFi" color="#8B5CF6" />
-            </group>
-            <group position={[0, 0, 0]}>
-              <NFTBadge3D title="NFT" color="#A855F7" />
-            </group>
-            <group position={[4, 0, 0]}>
-              <NFTBadge3D title="Audit" color="#8B5CF6" />
-            </group>
-
-            <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={1} />
-          </Suspense>
-        </Canvas>
-      </section>
+      {/* Removed Canvas and 3D models */}
 
       {/* Horizontal Scrolling Sessions */}
       <section className="relative overflow-hidden py-20">

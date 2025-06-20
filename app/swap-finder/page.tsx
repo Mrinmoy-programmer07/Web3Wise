@@ -136,30 +136,8 @@ export default function SwapFinderPage() {
         </div>
       </section>
 
-      {/* 3D Crypto Carousel */}
-      <section className="relative h-96 mb-20">
-        <Canvas camera={{ position: [0, 0, 12], fov: 75 }}>
-          <Suspense fallback={null}>
-            <ambientLight intensity={0.3} />
-            <pointLight position={[10, 10, 10]} intensity={1} color="#8B5CF6" />
-            <pointLight position={[-10, -10, -10]} intensity={0.5} color="#A855F7" />
-
-            <motion.group rotation-y={rotateY}>
-              {cryptos.map((crypto, index) => {
-                const angle = (index / cryptos.length) * Math.PI * 2
-                const radius = 6
-                const x = Math.cos(angle) * radius
-                const z = Math.sin(angle) * radius
-                return (
-                  <CryptoCoin3D key={crypto.symbol} symbol={crypto.symbol} color={crypto.color} position={[x, 0, z]} />
-                )
-              })}
-            </motion.group>
-
-            <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={1} />
-          </Suspense>
-        </Canvas>
-      </section>
+      {/* 3D Crypto Showcase */}
+      {/* Removed Canvas and 3D models */}
 
       {/* Swap Interface */}
       <section className="relative py-20 px-6">

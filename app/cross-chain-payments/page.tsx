@@ -154,19 +154,7 @@ export default function CrossChainPaymentsPage() {
       </section>
 
       {/* 3D Bridge Animation */}
-      <section className="relative h-96 mb-20">
-        <Canvas camera={{ position: [0, 2, 8], fov: 75 }}>
-          <Suspense fallback={null}>
-            <ambientLight intensity={0.3} />
-            <pointLight position={[10, 10, 10]} intensity={1} color="#8B5CF6" />
-            <pointLight position={[-10, -10, -10]} intensity={0.5} color="#A855F7" />
-
-            <BridgeAnimation />
-
-            <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={1} />
-          </Suspense>
-        </Canvas>
-      </section>
+      {/* Removed Canvas and 3D models */}
 
       {/* Payment Flow */}
       <section className="relative py-20 px-6">

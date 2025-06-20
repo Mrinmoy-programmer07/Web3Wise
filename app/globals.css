@@ -385,3 +385,11 @@ nav {
 .safe-fade-in {
   animation: safe-fade-in 0.5s ease-in-out;
 }
+
+.pe-none {
+  pointer-events: none;
+}
+
+.pe-auto {
+  pointer-events: auto;
+}

@@ -170,21 +170,7 @@ export default function ResearchHubPage() {
       </section>
 
       {/* 3D Research Cards */}
-      <section className="relative h-64 mb-20">
-        <Canvas camera={{ position: [0, 0, 8], fov: 75 }}>
-          <Suspense fallback={null}>
-            <ambientLight intensity={0.3} />
-            <pointLight position={[10, 10, 10]} intensity={1} color="#8B5CF6" />
-            <pointLight position={[-10, -10, -10]} intensity={0.5} color="#A855F7" />
-
-            {researchPapers.slice(0, 5).map((paper, index) => (
-              <ResearchCard3D key={paper.id} color="#8B5CF6" position={[(index - 2) * 2, Math.sin(index) * 0.5, 0]} />
-            ))}
-
-            <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.5} />
-          </Suspense>
-        </Canvas>
-      </section>
+      {/* Removed Canvas and 3D models */}
 
       {/* Search and Filters */}
       <section className="relative py-10 px-6">

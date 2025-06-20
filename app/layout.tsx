@@ -1,6 +1,7 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Inter, Sora, Barlow_Condensed } from "next/font/google"
+import Script from "next/script"
 import "./globals.css"
 import Navbar from "@/components/navbar"
 import PageTransition from "@/components/page-transition"
@@ -44,6 +45,7 @@ export default function RootLayout({
       >
         <Navbar />
         <PageTransition>{children}</PageTransition>
+        <Script type="module" src="https://unpkg.com/@splinetool/viewer@1.10.13/build/spline-viewer.js" />
       </body>
     </html>
   )
