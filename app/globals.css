@@ -1,0 +1,387 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #000000;
+  color: #ffffff;
+  font-family: var(--font-barlow-condensed), sans-serif;
+  letter-spacing: 0.025em;
+}
+
+/* Apply Sora font to ALL headings with enhanced styling */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-heading,
+.heading-primary,
+.heading-secondary,
+.text-heading {
+  font-family: var(--font-sora), sans-serif !important;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+/* Ensure ALL major headings and titles use Sora font */
+.hero-title,
+.page-title,
+.section-title,
+.main-heading,
+h1.font-heading,
+h2.font-heading,
+h3.font-heading {
+  font-family: var(--font-sora), sans-serif !important;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+/* Specific targeting for Web3Wise brand name */
+.brand-title,
+.logo-text,
+.web3wise-title {
+  font-family: var(--font-sora), sans-serif !important;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+/* Page-specific title styling */
+.nft-sessions-title,
+.consultants-title,
+.validator-title,
+.bot-support-title,
+.swap-finder-title,
+.research-hub-title,
+.cross-chain-title {
+  font-family: var(--font-sora), sans-serif !important;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+/* Enhanced gradient text with Sora */
+.gradient-title {
+  font-family: var(--font-sora), sans-serif !important;
+  font-weight: 800;
+  background: linear-gradient(135deg, #8b5cf6, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+/* Specific heading sizes with Sora - Enhanced for impact */
+h1 {
+  font-family: var(--font-sora), sans-serif !important;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+h2 {
+  font-family: var(--font-sora), sans-serif !important;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+h3 {
+  font-family: var(--font-sora), sans-serif !important;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+h4,
+h5,
+h6 {
+  font-family: var(--font-sora), sans-serif !important;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+/* Ensure all heading classes use Sora */
+.text-heading,
+.heading-primary,
+.heading-secondary,
+.hero-title,
+.section-title,
+.card-title {
+  font-family: var(--font-sora), sans-serif !important;
+}
+
+/* Large display headings */
+.text-5xl,
+.text-6xl,
+.text-7xl,
+.text-8xl,
+.text-9xl {
+  font-family: var(--font-sora), sans-serif !important;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+/* Medium headings */
+.text-3xl,
+.text-4xl {
+  font-family: var(--font-sora), sans-serif !important;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+/* Smaller headings */
+.text-xl,
+.text-2xl {
+  font-family: var(--font-sora), sans-serif !important;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+/* Apply Barlow Condensed to body text and content */
+p,
+span:not(.font-heading):not(.heading-primary):not(.heading-secondary),
+div:not(.font-heading):not(.heading-primary):not(.heading-secondary),
+.font-content {
+  font-family: var(--font-barlow-condensed), sans-serif;
+  letter-spacing: 0.025em;
+}
+
+/* Button text uses Barlow Condensed */
+button {
+  font-family: var(--font-barlow-condensed), sans-serif;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+/* Input and form elements */
+input,
+textarea,
+select {
+  font-family: var(--font-barlow-condensed), sans-serif;
+  letter-spacing: 0.025em;
+}
+
+/* Navigation uses Barlow Condensed for better readability */
+nav {
+  font-family: var(--font-barlow-condensed), sans-serif;
+  letter-spacing: 0.025em;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #8b5cf6, #a855f7);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #a855f7, #8b5cf6);
+}
+
+/* Glassmorphism utilities */
+.glass {
+  background: rgba(31, 27, 36, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(45, 27, 61, 0.5);
+}
+
+.glass-hover:hover {
+  background: rgba(31, 27, 36, 0.9);
+  border-color: rgba(139, 92, 246, 0.6);
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+}
+
+/* Safe background for home page */
+.safe-background {
+  background: radial-gradient(ellipse at center, rgba(139, 92, 246, 0.15) 0%, rgba(0, 0, 0, 0.8) 50%, #000000 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.safe-background::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 20% 80%, rgba(168, 85, 247, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Floating particles animation */
+.floating-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(139, 92, 246, 0.6);
+  border-radius: 50%;
+  animation: float 6s ease-in-out infinite;
+}
+
+.floating-particle:nth-child(1) {
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.floating-particle:nth-child(2) {
+  top: 60%;
+  left: 80%;
+  animation-delay: 2s;
+}
+
+.floating-particle:nth-child(3) {
+  top: 80%;
+  left: 20%;
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-20px) scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* Performance optimizations */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Smooth animations */
+.smooth-animation {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity;
+}
+
+/* Enhanced mobile performance */
+@media (max-width: 768px) {
+  .gpu-accelerated {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .floating-particle {
+    animation: none !important;
+  }
+
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Purple glow effects */
+.purple-glow {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+}
+
+.purple-glow-hover:hover {
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.7);
+}
+
+/* Purple pulse animation */
+@keyframes purple-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(139, 92, 246, 0.8);
+  }
+}
+
+.purple-pulse {
+  animation: purple-pulse 2s ease-in-out infinite;
+}
+
+/* Enhanced typography for Barlow Condensed */
+.text-condensed {
+  font-family: var(--font-barlow-condensed), sans-serif;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.text-condensed-light {
+  font-family: var(--font-barlow-condensed), sans-serif;
+  letter-spacing: 0.025em;
+  font-weight: 400;
+}
+
+.text-condensed-bold {
+  font-family: var(--font-barlow-condensed), sans-serif;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
+/* Responsive heading adjustments */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2.5rem;
+    letter-spacing: -0.03em;
+  }
+
+  h2 {
+    font-size: 2rem;
+    letter-spacing: -0.025em;
+  }
+
+  .text-7xl,
+  .text-8xl,
+  .text-9xl {
+    font-size: 3rem;
+    letter-spacing: -0.03em;
+  }
+}
+
+/* Loading animation */
+@keyframes safe-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.safe-fade-in {
+  animation: safe-fade-in 0.5s ease-in-out;
+}
