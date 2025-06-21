@@ -1,8 +1,9 @@
 "use client"
 
 import { motion, AnimatePresence } from "framer-motion"
-import { useRef, useState } from "react"
-import { Star, Calendar, Filter, Search, MapPin, Award, X, BookOpen } from "lucide-react"
+import { useRef, useState, useEffect } from "react"
+import { Star, Calendar, Filter, Search, MapPin, Award, X, BookOpen, UserPlus, Plus } from "lucide-react"
+import ConsultantRegistrationForm from "@/components/consultant-registration-form"
 
 // TypeScript declaration for Petra wallet
 declare global {
@@ -19,7 +20,7 @@ declare global {
   }
 }
 
-const consultants = [
+const defaultConsultants = [
   {
     id: 1,
     name: "Alex Chen",
@@ -127,6 +128,47 @@ export default function ConsultantsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedConsultant, setSelectedConsultant] = useState<number | null>(null)
   const [showRules, setShowRules] = useState(false)
+  const [showRegistrationForm, setShowRegistrationForm] = useState(false)
+  const [consultants, setConsultants] = useState(defaultConsultants)
+  const [isLoading, setIsLoading] = useState(false)
+
+  // Load consultants from API
+  useEffect(() => {
+    const loadConsultants = async () => {
+      setIsLoading(true)
+      try {
+        const response = await fetch('/api/consultant-registration')
+        if (response.ok) {
+          const data = await response.json()
+          if (data.consultants && data.consultants.length > 0) {
+            // Transform API data to match the expected format
+            const apiConsultants = data.consultants.map((c: any) => ({
+              id: c.id,
+              name: c.fullName,
+              expertise: c.expertise,
+              rating: c.rating,
+              sessions: c.sessions,
+              hourlyRate: `$${c.hourlyRate}`,
+              location: c.location,
+              languages: c.languages,
+              specialties: c.specialties,
+              avatar: c.avatar,
+              color: c.color,
+              verified: c.verified,
+              description: c.description,
+            }))
+            setConsultants(prev => [...defaultConsultants, ...apiConsultants])
+          }
+        }
+      } catch (error) {
+        console.error('Error loading consultants:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadConsultants()
+  }, [])
 
   const handleBooking = async (consultantId: number) => {
     // Find the consultant
@@ -202,6 +244,39 @@ export default function ConsultantsPage() {
     }
   }
 
+  const handleRegistrationSuccess = (newConsultant: any) => {
+    // Transform the new consultant data to match the expected format
+    const transformedConsultant = {
+      id: newConsultant.id,
+      name: newConsultant.fullName,
+      expertise: newConsultant.expertise,
+      rating: newConsultant.rating,
+      sessions: newConsultant.sessions,
+      hourlyRate: `$${newConsultant.hourlyRate}`,
+      location: newConsultant.location,
+      languages: newConsultant.languages,
+      specialties: newConsultant.specialties,
+      avatar: newConsultant.avatar,
+      color: newConsultant.color,
+      verified: newConsultant.verified,
+      description: newConsultant.description,
+    }
+    
+    setConsultants(prev => [...prev, transformedConsultant])
+  }
+
+  // Filter consultants based on search and filter
+  const filteredConsultants = consultants.filter(consultant => {
+    const matchesSearch = consultant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         consultant.expertise.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         consultant.description.toLowerCase().includes(searchQuery.toLowerCase())
+    
+    const matchesFilter = selectedFilter === "all" || 
+                         consultant.expertise.toLowerCase().includes(selectedFilter.toLowerCase())
+    
+    return matchesSearch && matchesFilter
+  })
+
   return (
     <div ref={containerRef} className="relative min-h-screen pt-24 bg-pure-black">
       {/* Hero Section */}
@@ -239,12 +314,12 @@ export default function ConsultantsPage() {
             Connect with industry-leading Web3 experts for personalized guidance and strategic insights
           </motion.p>
 
-          {/* Read Rules Button */}
+          {/* Action Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="mb-20"
+            className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-20"
           >
             <motion.button
               onClick={() => setShowRules(true)}
@@ -254,6 +329,16 @@ export default function ConsultantsPage() {
             >
               <BookOpen className="w-5 h-5 text-bright-purple" />
               <span className="text-bright-purple font-medium">Read Rules Before Booking</span>
+            </motion.button>
+
+            <motion.button
+              onClick={() => setShowRegistrationForm(true)}
+              className="inline-flex items-center space-x-2 bg-gradient-to-r from-bright-purple to-light-purple text-pure-white rounded-full px-8 py-4 font-medium hover:shadow-lg hover:shadow-bright-purple/25 transition-all duration-300"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <UserPlus className="w-5 h-5" />
+              <span>Become a Consultant</span>
             </motion.button>
           </motion.div>
         </div>
@@ -303,109 +388,129 @@ export default function ConsultantsPage() {
       {/* Consultants Grid */}
       <section className="relative py-10 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {consultants.map((consultant, index) => (
-              <motion.div
-                key={consultant.id}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -10, scale: 1.02 }}
-                className="group perspective-1000 cursor-pointer"
-                onClick={() => setSelectedConsultant(consultant.id)}
+          {isLoading ? (
+            <div className="text-center py-20">
+              <div className="w-8 h-8 border-2 border-bright-purple border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-gray-light">Loading consultants...</p>
+            </div>
+          ) : filteredConsultants.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-gray-light text-xl mb-4">No consultants found</p>
+              <motion.button
+                onClick={() => setShowRegistrationForm(true)}
+                className="inline-flex items-center space-x-2 bg-gradient-to-r from-bright-purple to-light-purple text-pure-white rounded-full px-6 py-3 font-medium"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <div className="glass glass-hover rounded-3xl p-6 transform-3d group-hover:rotateY-5 transition-all duration-500 purple-glow-hover">
-                  {/* Avatar and Status */}
-                  <div className="relative mb-6">
-                    <div className="w-20 h-20 mx-auto rounded-full overflow-hidden border-2 border-transparent group-hover:border-bright-purple transition-colors duration-300">
-                      <div
-                        className="w-full h-full flex items-center justify-center text-2xl font-bold text-pure-white"
-                        style={{ background: `linear-gradient(45deg, ${consultant.color}, ${consultant.color}80)` }}
-                      >
-                        {consultant.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
+                <Plus className="w-4 h-4" />
+                <span>Become the First Consultant</span>
+              </motion.button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredConsultants.map((consultant, index) => (
+                <motion.div
+                  key={consultant.id}
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  whileHover={{ y: -10, scale: 1.02 }}
+                  className="group perspective-1000 cursor-pointer"
+                  onClick={() => setSelectedConsultant(consultant.id)}
+                >
+                  <div className="glass glass-hover rounded-3xl p-6 transform-3d group-hover:rotateY-5 transition-all duration-500 purple-glow-hover">
+                    {/* Avatar and Status */}
+                    <div className="relative mb-6">
+                      <div className="w-20 h-20 mx-auto rounded-full overflow-hidden border-2 border-transparent group-hover:border-bright-purple transition-colors duration-300">
+                        <div
+                          className="w-full h-full flex items-center justify-center text-2xl font-bold text-pure-white"
+                          style={{ background: `linear-gradient(45deg, ${consultant.color}, ${consultant.color}80)` }}
+                        >
+                          {consultant.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")}
+                        </div>
                       </div>
-                    </div>
-                    {consultant.verified && (
-                      <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-bright-purple to-light-purple text-pure-white text-xs px-2 py-1 rounded-full font-medium">
-                        Verified
-                      </div>
-                    )}
-                    <div className="absolute top-0 right-0 w-4 h-4 bg-green-400 rounded-full border-2 border-pure-black"></div>
-                  </div>
-
-                  {/* Info */}
-                  <div className="text-center">
-                    <h3 className="text-xl font-bold text-pure-white mb-1 group-hover:text-bright-purple transition-colors duration-300">
-                      {consultant.name}
-                    </h3>
-                    <p className="text-light-purple font-medium mb-2">{consultant.expertise}</p>
-                    <p className="text-gray-light text-sm mb-4 line-clamp-2">{consultant.description}</p>
-
-                    {/* Stats */}
-                    <div className="flex items-center justify-center space-x-4 mb-4">
-                      <div className="flex items-center space-x-1">
-                        <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                        <span className="text-pure-white font-medium">{consultant.rating}</span>
-                      </div>
-                      <div className="flex items-center space-x-1 text-gray-light">
-                        <Calendar className="w-4 h-4" />
-                        <span className="text-sm">{consultant.sessions} sessions</span>
-                      </div>
-                    </div>
-
-                    {/* Location and Rate */}
-                    <div className="flex items-center justify-between text-sm mb-4">
-                      <div className="flex items-center space-x-1 text-gray-light">
-                        <MapPin className="w-4 h-4" />
-                        <span>{consultant.location}</span>
-                      </div>
-                      <div className="text-bright-purple font-bold">{consultant.hourlyRate}/hr</div>
-                    </div>
-
-                    {/* Specialties */}
-                    <div className="flex flex-wrap gap-1 mb-6">
-                      {consultant.specialties.slice(0, 2).map((specialty, i) => (
-                        <span key={i} className="bg-dark-purple text-gray-light px-2 py-1 rounded-lg text-xs">
-                          {specialty}
-                        </span>
-                      ))}
-                      {consultant.specialties.length > 2 && (
-                        <span className="bg-dark-purple text-gray-light px-2 py-1 rounded-lg text-xs">
-                          +{consultant.specialties.length - 2}
-                        </span>
+                      {consultant.verified && (
+                        <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-bright-purple to-light-purple text-pure-white text-xs px-2 py-1 rounded-full font-medium">
+                          Verified
+                        </div>
                       )}
+                      <div className="absolute top-0 right-0 w-4 h-4 bg-green-400 rounded-full border-2 border-pure-black"></div>
                     </div>
 
-                    {/* CTA Buttons */}
-                    <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                      <motion.a
-                        href="https://calendly.com/rsayan570"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 bg-gradient-to-r from-bright-purple to-light-purple text-pure-white py-3 rounded-full font-medium text-center"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        Schedule Meet
-                      </motion.a>
-                      <motion.button
-                        onClick={() => handleBooking(consultant.id)}
-                        className="flex-1 bg-transparent border-2 border-bright-purple text-bright-purple py-3 rounded-full font-medium hover:bg-bright-purple hover:text-pure-white transition-all duration-300"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        Book Now
-                      </motion.button>
+                    {/* Info */}
+                    <div className="text-center">
+                      <h3 className="text-xl font-bold text-pure-white mb-1 group-hover:text-bright-purple transition-colors duration-300">
+                        {consultant.name}
+                      </h3>
+                      <p className="text-light-purple font-medium mb-2">{consultant.expertise}</p>
+                      <p className="text-gray-light text-sm mb-4 line-clamp-2">{consultant.description}</p>
+
+                      {/* Stats */}
+                      <div className="flex items-center justify-center space-x-4 mb-4">
+                        <div className="flex items-center space-x-1">
+                          <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                          <span className="text-pure-white font-medium">{consultant.rating}</span>
+                        </div>
+                        <div className="flex items-center space-x-1 text-gray-light">
+                          <Calendar className="w-4 h-4" />
+                          <span className="text-sm">{consultant.sessions} sessions</span>
+                        </div>
+                      </div>
+
+                      {/* Location and Rate */}
+                      <div className="flex items-center justify-between text-sm mb-4">
+                        <div className="flex items-center space-x-1 text-gray-light">
+                          <MapPin className="w-4 h-4" />
+                          <span>{consultant.location}</span>
+                        </div>
+                        <div className="text-bright-purple font-bold">{consultant.hourlyRate}/hr</div>
+                      </div>
+
+                      {/* Specialties */}
+                      <div className="flex flex-wrap gap-1 mb-6">
+                        {consultant.specialties.slice(0, 2).map((specialty, i) => (
+                          <span key={i} className="bg-dark-purple text-gray-light px-2 py-1 rounded-lg text-xs">
+                            {specialty}
+                          </span>
+                        ))}
+                        {consultant.specialties.length > 2 && (
+                          <span className="bg-dark-purple text-gray-light px-2 py-1 rounded-lg text-xs">
+                            +{consultant.specialties.length - 2}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* CTA Buttons */}
+                      <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                        <motion.a
+                          href="https://calendly.com/rsayan570"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 bg-gradient-to-r from-bright-purple to-light-purple text-pure-white py-3 rounded-full font-medium text-center"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          Schedule Meet
+                        </motion.a>
+                        <motion.button
+                          onClick={() => handleBooking(consultant.id)}
+                          className="flex-1 bg-transparent border-2 border-bright-purple text-bright-purple py-3 rounded-full font-medium hover:bg-bright-purple hover:text-pure-white transition-all duration-300"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          Book Now
+                        </motion.button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -428,7 +533,7 @@ export default function ConsultantsPage() {
                   viewport={{ once: true }}
                   className="text-4xl font-bold bg-gradient-to-r from-bright-purple to-light-purple bg-clip-text text-transparent mb-2"
                 >
-                  50+
+                  {consultants.length}+
                 </motion.div>
                 <p className="text-gray-light">Expert Consultants</p>
               </div>
@@ -472,6 +577,13 @@ export default function ConsultantsPage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Consultant Registration Form */}
+      <ConsultantRegistrationForm
+        isOpen={showRegistrationForm}
+        onClose={() => setShowRegistrationForm(false)}
+        onSuccess={handleRegistrationSuccess}
+      />
 
       {/* Rules Modal */}
       <AnimatePresence>

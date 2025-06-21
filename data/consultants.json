@@ -1,0 +1,66 @@
+[
+  {
+    "id": "mc6qr5ouu9tvcbz3blj",
+    "fullName": "Sayan Roy",
+    "email": "rsayan570@gmail.com",
+    "phone": "91+ 8240631968",
+    "expertise": "Web3 Security",
+    "experience": "2+ experience",
+    "hourlyRate": "170",
+    "location": "Kolkata, India",
+    "languages": [
+      "English",
+      "Spanish",
+      "Hindi"
+    ],
+    "specialties": [
+      "yield farming"
+    ],
+    "description": "I have a good experience in the field of web 3 security. And the most most important thing is i have made many financial plan for web 3 journey for many folks .\nCan't wait to make your's too!",
+    "linkedinUrl": "https://www.linkedin.com/in/mesayanroy/",
+    "githubUrl": "https://github.com/mesayanroy",
+    "portfolioUrl": "https://mesayanroy.vercel.app/",
+    "rating": 2.5,
+    "sessions": 0,
+    "verified": false,
+    "expertiseLevel": "BEGINNER",
+    "confidence": "MEDIUM",
+    "isApproved": false,
+    "createdAt": "2025-06-21T21:18:52.302Z",
+    "updatedAt": "2025-06-21T21:18:52.309Z",
+    "avatar": "/placeholder.svg?height=200&width=200",
+    "color": "#A855F7",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "mc6qx6jj7sft9yjtjfp",
+    "fullName": "sayan roy",
+    "email": "rjdslaj@gmail.com",
+    "phone": "5165615861",
+    "expertise": "DeFi Architecture",
+    "experience": "3+",
+    "hourlyRate": "120",
+    "location": "kolkata, india",
+    "languages": [
+      "Spanish",
+      "English",
+      "Hindi"
+    ],
+    "specialties": [],
+    "description": "",
+    "linkedinUrl": "",
+    "githubUrl": "https://github.com/mesayanroy",
+    "portfolioUrl": "https://mesayanroy.vercel.app/",
+    "rating": 3,
+    "sessions": 0,
+    "verified": false,
+    "expertiseLevel": "INTERMEDIATE",
+    "confidence": "MEDIUM",
+    "isApproved": false,
+    "createdAt": "2025-06-21T21:23:33.343Z",
+    "updatedAt": "2025-06-21T21:23:33.343Z",
+    "avatar": "/placeholder.svg?height=200&width=200",
+    "color": "#8B5CF6",
+    "status": "ACTIVE"
+  }
+]
