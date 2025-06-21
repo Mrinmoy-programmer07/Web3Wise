@@ -24,7 +24,7 @@ const config: Config = {
         sora: ["var(--font-sora)", "sans-serif"],
         barlow: ["var(--font-barlow-condensed)", "sans-serif"],
         heading: ["var(--font-sora)", "sans-serif"],
-        content: ["var(--font-barlow-condensed)", "sans-serif", "*.{js,ts,jsx,tsx,mdx}"],
+        content: ["var(--font-barlow-condensed)", "sans-serif"],
         // Enhanced Sora variants
         "sora-light": ["var(--font-sora)", "sans-serif"],
         "sora-medium": ["var(--font-sora)", "sans-serif"],
