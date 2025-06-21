@@ -131,6 +131,7 @@ export default function ConsultantsPage() {
   const [showRegistrationForm, setShowRegistrationForm] = useState(false)
   const [consultants, setConsultants] = useState(defaultConsultants)
   const [isLoading, setIsLoading] = useState(false)
+  const [hasAcceptedGuidelines, setHasAcceptedGuidelines] = useState(false)
 
   // Load consultants from API
   useEffect(() => {
@@ -265,6 +266,11 @@ export default function ConsultantsPage() {
     setConsultants(prev => [...prev, transformedConsultant])
   }
 
+  const handleGuidelinesAccept = () => {
+    setHasAcceptedGuidelines(true)
+    setShowRules(false)
+  }
+
   // Filter consultants based on search and filter
   const filteredConsultants = consultants.filter(consultant => {
     const matchesSearch = consultant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -321,25 +327,39 @@ export default function ConsultantsPage() {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-20"
           >
-            <motion.button
-              onClick={() => setShowRules(true)}
-              className="inline-flex items-center space-x-2 glass glass-hover rounded-full px-8 py-4 purple-glow-hover transition-all duration-300"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <BookOpen className="w-5 h-5 text-bright-purple" />
-              <span className="text-bright-purple font-medium">Read Rules Before Booking</span>
-            </motion.button>
+            {!hasAcceptedGuidelines ? (
+              <motion.button
+                onClick={() => setShowRules(true)}
+                className="inline-flex items-center space-x-2 glass glass-hover rounded-full px-8 py-4 purple-glow-hover transition-all duration-300"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <BookOpen className="w-5 h-5 text-bright-purple" />
+                <span className="text-bright-purple font-medium">Read Guidelines to Become a Consultant</span>
+              </motion.button>
+            ) : (
+              <>
+                <motion.button
+                  onClick={() => setShowRules(true)}
+                  className="inline-flex items-center space-x-2 glass glass-hover rounded-full px-8 py-4 purple-glow-hover transition-all duration-300"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <BookOpen className="w-5 h-5 text-bright-purple" />
+                  <span className="text-bright-purple font-medium">Review Guidelines</span>
+                </motion.button>
 
-            <motion.button
-              onClick={() => setShowRegistrationForm(true)}
-              className="inline-flex items-center space-x-2 bg-gradient-to-r from-bright-purple to-light-purple text-pure-white rounded-full px-8 py-4 font-medium hover:shadow-lg hover:shadow-bright-purple/25 transition-all duration-300"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <UserPlus className="w-5 h-5" />
-              <span>Become a Consultant</span>
-            </motion.button>
+                <motion.button
+                  onClick={() => setShowRegistrationForm(true)}
+                  className="inline-flex items-center space-x-2 bg-gradient-to-r from-bright-purple to-light-purple text-pure-white rounded-full px-8 py-4 font-medium hover:shadow-lg hover:shadow-bright-purple/25 transition-all duration-300"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <UserPlus className="w-5 h-5" />
+                  <span>Become a Consultant</span>
+                </motion.button>
+              </>
+            )}
           </motion.div>
         </div>
       </section>
@@ -396,15 +416,27 @@ export default function ConsultantsPage() {
           ) : filteredConsultants.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-gray-light text-xl mb-4">No consultants found</p>
-              <motion.button
-                onClick={() => setShowRegistrationForm(true)}
-                className="inline-flex items-center space-x-2 bg-gradient-to-r from-bright-purple to-light-purple text-pure-white rounded-full px-6 py-3 font-medium"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Plus className="w-4 h-4" />
-                <span>Become the First Consultant</span>
-              </motion.button>
+              {!hasAcceptedGuidelines ? (
+                <motion.button
+                  onClick={() => setShowRules(true)}
+                  className="inline-flex items-center space-x-2 bg-gradient-to-r from-bright-purple to-light-purple text-pure-white rounded-full px-6 py-3 font-medium"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <BookOpen className="w-4 h-4" />
+                  <span>Read Guidelines to Become the First Consultant</span>
+                </motion.button>
+              ) : (
+                <motion.button
+                  onClick={() => setShowRegistrationForm(true)}
+                  className="inline-flex items-center space-x-2 bg-gradient-to-r from-bright-purple to-light-purple text-pure-white rounded-full px-6 py-3 font-medium"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Become the First Consultant</span>
+                </motion.button>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -611,7 +643,7 @@ export default function ConsultantsPage() {
                     <BookOpen className="w-5 h-5 text-pure-white" />
                   </div>
                   <h2 className="text-2xl font-bold bg-gradient-to-r from-bright-purple to-light-purple bg-clip-text text-transparent">
-                    Booking Rules & Guidelines
+                    Consultant Guidelines & Rules
                   </h2>
                 </div>
                 <motion.button
@@ -629,53 +661,67 @@ export default function ConsultantsPage() {
                 <div className="glass rounded-2xl p-6">
                   <h3 className="text-lg font-semibold text-bright-purple mb-4">Important Guidelines</h3>
                   <div className="text-gray-light leading-relaxed space-y-4">
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut
-                      labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                      nisi ut aliquip ex ea commodo consequat.
-                    </p>
-                    <p>
-                      Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-                      pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-                      mollit anim id est laborum.
-                    </p>
-                    <p>
-                      Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium,
-                      totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae
-                      dicta sunt explicabo.
-                    </p>
+                    <p>Web3 consultants listed on our platform are expected to demonstrate advanced expertise across different blockchain environments such as Aptos (MoveVM), EVM-compatible networks (Ethereum, Polygon, BNB Chain, etc.), and Solana (SVM). They should possess hands-on knowledge of smart contract development, on-chain infrastructure, wallet integration, and decentralized application architecture specific to each chain.</p>
+
+                    <p>For Aptos consultants, it is essential to understand the Move language, resource management, and parallel transaction execution. They must be proficient with Move modules, Aptos SDKs, testing tools, and governance modules, and be capable of delivering safe, upgradeable, and gas-efficient contracts on the Aptos mainnet or testnet.</p>
+
+                    <p>Consultants operating in EVM environments must have a deep understanding of Solidity and ERC standards such as ERC-20, ERC-721, and ERC-1155. They should use tooling like Hardhat, Foundry, and OpenZeppelin, follow secure development practices, and be capable of integrating with Layer 2 networks, oracles, and bridges. Audit readiness and familiarity with gas optimization techniques are a must.</p>
+
+                    <p>Solana-based consultants are expected to be proficient in Rust and Sealevel's parallel processing model. Experience with Anchor framework, PDAs, and program deployment on the Solana blockchain is required. They must understand transaction batching, state compression, and Solana's unique account model to build fast and scalable dApps.</p>
+
+                    <p>Security is a core expectation. Consultants must apply security-first development approaches across all networks. This includes test-driven development, formal verification (especially in Move-based systems), and coordination of independent audits. They should never engage in or promote unaudited or risky smart contracts or protocols.</p>
+
+                    <p>All consultants must engage clients professionally and transparently. This includes defining scope, timeline, and deliverables clearly. Consultants should support clients through discovery, prototyping, testing, deployment, and maintenance phases. Emphasis must be placed on clear documentation, education, and long-term dApp sustainability.</p>
+
+                    <p>Ethical conduct is non-negotiable. Consultants must disclose any conflicts of interest and avoid promoting tokens or protocols for personal gain. They are required to respect client confidentiality and be willing to sign NDAs where appropriate. The platform encourages open-source contributions and alignment with decentralized, community-owned values.</p>
+
+                    <p>Lastly, consultants should educate and empower clients. This involves offering tailored recommendations based on the specific use-case and network advantages—such as EVM for DeFi liquidity, Aptos for safe and scalable asset logic, or Solana for real-time gaming and microtransaction-based applications. A cross-chain strategy should be proposed when appropriate, including token bridging and interoperability planning.</p>
                   </div>
                 </div>
 
                 <div className="glass rounded-2xl p-6">
                   <h3 className="text-lg font-semibold text-light-purple mb-4">Booking Terms</h3>
                   <div className="text-gray-light leading-relaxed space-y-4">
-                    <p>
-                      Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur
-                      magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem
-                      ipsum quia dolor sit amet.
-                    </p>
-                    <p>
-                      Consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore
-                      magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam
-                      corporis suscipit laboriosam.
-                    </p>
+                    <p>By booking a consultation through our platform, clients agree to engage with Web3 consultants in a professional and time-bound manner. Bookings are made with the expectation of mutual respect, punctuality, and clarity in communication between the client and consultant.</p>
+
+                    <p>Clients must clearly define their project scope, goals, and expectations prior to the scheduled session. This ensures that consultants are prepared with the relevant knowledge and tools across specific networks like Aptos, EVM chains, or Solana. Any changes to the agenda should be communicated at least 12 hours in advance.</p>
+
+                    <p>Booking confirmation is subject to consultant availability. All session times are displayed in the consultant's local time zone unless otherwise stated. Clients are responsible for ensuring compatibility of scheduling times. A reminder will be sent 1 hour prior to the session.</p>
+
+                    <p>Payment for consultations is required either in full or in part (as per consultant policy) before the session begins. Refunds are permitted only if cancellations are made at least 24 hours before the appointment time. No-shows or last-minute cancellations may result in partial or full forfeiture of the consultation fee, depending on consultant discretion.</p>
+
+                    <p>All communication during the booking process and consultation must take place through approved channels such as our platform's integrated chat or call system. Consultants are not liable for any agreements made outside of the platform unless explicitly stated in writing.</p>
+
+                    <p>If the session involves code reviews, architecture planning, or tokenomics feedback, clients should provide access to all relevant documents or repositories before the meeting. This helps the consultant deliver maximum value in the allotted time.</p>
+
+                    <p>Both consultants and clients agree to maintain confidentiality of shared project information, including but not limited to smart contract code, whitepapers, business models, and investor materials. NDAs may be signed upon request.</p>
+
+                    <p>Our platform reserves the right to moderate, reschedule, or cancel any session in cases of abuse, spam, or violation of ethical standards. Repeat violations may lead to account suspension or platform bans.</p>
+
+                    <p>By proceeding with a booking, both parties acknowledge these terms and agree to conduct the session in good faith, upholding Web3 principles of transparency, decentralization, and integrity.</p>
                   </div>
                 </div>
 
                 <div className="glass rounded-2xl p-6">
                   <h3 className="text-lg font-semibold text-bright-purple mb-4">Payment & Cancellation</h3>
                   <div className="text-gray-light leading-relaxed space-y-4">
-                    <p>
-                      At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-                      deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non
-                      provident.
-                    </p>
-                    <p>
-                      Similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et
-                      harum quidem rerum facilis est et expedita distinctio nam libero tempore cum soluta nobis est
-                      eligendi optio cumque.
-                    </p>
+                    <p>All consultation payments on this platform must be made using tokens supported on the Aptos blockchain. Clients are required to complete payment before booking is confirmed. We support payments via Aptos-native tokens, and all transactions are to be made using a supported wallet such as the Petra Wallet.</p>
+
+                    <p>Clients may choose to swap their existing tokens into the required Aptos token using our integrated token swapping feature. This swap must be completed successfully before proceeding with the consultant booking. Failure to complete the swap or payment will prevent confirmation of the session.</p>
+
+                    <p>Once payment is completed on-chain via Petra or another compatible wallet, the transaction will be automatically verified and logged. Upon successful verification, the consultant will receive the booking confirmation, and the time slot will be secured for the client.</p>
+
+                    <p>Our platform does not currently support fiat or off-chain payments. All transactions are conducted transparently on-chain, and both clients and consultants are encouraged to verify their payment transaction hash for record-keeping and dispute resolution, if necessary.</p>
+
+                    <p>Cancellations are permitted up to 24 hours before the booked session. In such cases, the platform will initiate a refund process via the Aptos network. Refunds will be processed in the same token used for payment, minus any gas or transaction fees that may have been incurred.</p>
+
+                    <p>Last-minute cancellations (within 24 hours) or client no-shows are not eligible for a refund. However, in exceptional situations such as technical failures or mutual agreement between consultant and client, rescheduling may be allowed at the discretion of the consultant.</p>
+
+                    <p>In case a consultant cancels a session, the full payment will be refunded to the client automatically, or the session will be rescheduled at no additional cost based on client preference.</p>
+
+                    <p>All payment activities are final once confirmed on-chain. We strongly advise clients to double-check the wallet address, token amount, and network details before initiating any transaction. The platform is not responsible for loss of funds due to incorrect wallet use, wrong token transfers, or network confusion.</p>
+
+                    <p>By proceeding with a booking, users acknowledge and accept these payment and cancellation terms. Our system ensures a fair, transparent, and decentralized approach to consultant engagements powered by Aptos and token-based swaps.</p>
                   </div>
                 </div>
               </div>
@@ -683,12 +729,12 @@ export default function ConsultantsPage() {
               {/* Footer */}
               <div className="flex justify-end mt-8 pt-6 border-t border-gray-800">
                 <motion.button
-                  onClick={() => setShowRules(false)}
+                  onClick={handleGuidelinesAccept}
                   className="bg-gradient-to-r from-bright-purple to-light-purple text-pure-white px-8 py-3 rounded-full font-medium"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  I Understand
+                  I Accept & Understand
                 </motion.button>
               </div>
             </motion.div>
