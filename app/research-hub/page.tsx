@@ -1,11 +1,12 @@
 "use client"
 
 import { motion, useScroll, useTransform } from "framer-motion"
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import { FileText, Shield, TrendingUp, Zap, Download, Eye, Filter, Search } from "lucide-react"
 import { Canvas } from "@react-three/fiber"
 import { Float, Box, OrbitControls } from "@react-three/drei"
 import { Suspense } from "react"
+import SplineViewer from "@/components/spline-viewer"
 
 function ResearchCard3D({ color, position }: { color: string; position: [number, number, number] }) {
   return (
@@ -113,13 +114,46 @@ export default function ResearchHubPage() {
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedPaper, setSelectedPaper] = useState<number | null>(null)
+  const [isHorizontalScrolling, setIsHorizontalScrolling] = useState(false)
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
   })
 
-  const x = useTransform(scrollYProgress, [0.2, 0.8], ["0%", "-50%"])
+  const x = useTransform(scrollYProgress, [0.6, 0.9], ["0%", "-50%"])
+
+  // Handle scroll direction detection
+  const handleWheel = (e: React.WheelEvent) => {
+    const isHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY)
+    
+    if (isHorizontal) {
+      setIsHorizontalScrolling(true)
+      e.preventDefault()
+      
+      // Reset after a short delay
+      setTimeout(() => {
+        setIsHorizontalScrolling(false)
+      }, 100)
+    }
+  }
+
+  // Prevent vertical scroll when horizontal scrolling is active
+  useEffect(() => {
+    const preventVerticalScroll = (e: WheelEvent) => {
+      if (isHorizontalScrolling) {
+        e.preventDefault()
+      }
+    }
+
+    if (isHorizontalScrolling) {
+      document.addEventListener('wheel', preventVerticalScroll, { passive: false })
+    }
+
+    return () => {
+      document.removeEventListener('wheel', preventVerticalScroll)
+    }
+  }, [isHorizontalScrolling])
 
   const filteredPapers = researchPapers.filter((paper) => {
     const matchesCategory = selectedCategory === "All" || paper.category === selectedCategory
@@ -134,43 +168,48 @@ export default function ResearchHubPage() {
     <div ref={containerRef} className="relative min-h-screen pt-24 bg-pure-black">
       {/* Hero Section */}
       <section className="relative py-20 px-6">
-        <div className="max-w-7xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="mb-8"
-          >
-            <div className="inline-flex items-center space-x-2 glass rounded-full px-6 py-3 mb-8 purple-glow">
-              <FileText className="w-5 h-5 text-bright-purple" />
-              <span className="text-bright-purple font-medium">Cutting-Edge Web3 Research</span>
-            </div>
-          </motion.div>
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 items-center gap-12">
+          {/* Left Content */}
+          <div className="text-left">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="mb-8"
+            >
+              <div className="inline-flex items-center space-x-2 glass rounded-full px-6 py-3 purple-glow">
+                <FileText className="w-5 h-5 text-bright-purple" />
+                <span className="text-bright-purple font-medium">Cutting-Edge Web3 Research</span>
+              </div>
+            </motion.div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="research-hub-title gradient-title text-5xl md:text-7xl font-bold mb-8"
-          >
-            <span className="bg-gradient-to-r from-bright-purple to-light-purple bg-clip-text text-transparent">
-              Research Hub
-            </span>
-          </motion.h1>
+            <motion.h1
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="research-hub-title gradient-title text-5xl md:text-7xl font-bold mb-8"
+            >
+              <span className="bg-gradient-to-r from-bright-purple to-light-purple bg-clip-text text-transparent">
+                Research Hub
+              </span>
+            </motion.h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-xl text-gray-light max-w-3xl mx-auto mb-12"
-          >
-            Access cutting-edge Web3 research papers, market analysis, and technical documentation from industry experts
-          </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="text-xl text-gray-light max-w-xl mb-12"
+            >
+              Access cutting-edge Web3 research papers, market analysis, and technical documentation from industry experts
+            </motion.p>
+          </div>
+
+          {/* Right 3D Model */}
+          <div className="relative w-full h-[400px] lg:h-[500px]">
+            <SplineViewer scene="https://prod.spline.design/GepEd1nFpM7xdDOa/scene.splinecode" background="#000000" />
+          </div>
         </div>
       </section>
-
-      {/* 3D Research Cards */}
-      {/* Removed Canvas and 3D models */}
 
       {/* Search and Filters */}
       <section className="relative py-10 px-6">
@@ -228,7 +267,11 @@ export default function ResearchHubPage() {
             </span>
           </motion.h2>
 
-          <motion.div style={{ x }} className="flex space-x-8">
+          <motion.div 
+            style={{ x }} 
+            className="flex space-x-8"
+            onWheel={handleWheel}
+          >
             {filteredPapers.map((paper, index) => (
               <motion.div
                 key={paper.id}

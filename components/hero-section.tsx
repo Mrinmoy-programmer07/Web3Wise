@@ -1,4 +1,4 @@
-"use client"
+sc"use client"
 
 import { useRef, useEffect } from "react"
 import { ArrowRight, Sparkles } from "lucide-react"

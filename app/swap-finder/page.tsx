@@ -6,6 +6,7 @@ import { ArrowUpDown, TrendingUp, Zap, RefreshCw } from "lucide-react"
 import { Canvas } from "@react-three/fiber"
 import { Float, Sphere, OrbitControls, Text3D } from "@react-three/drei"
 import { Suspense } from "react"
+import SplineViewer from "@/components/spline-viewer"
 
 function CryptoCoin3D({
   symbol,
@@ -99,40 +100,36 @@ export default function SwapFinderPage() {
   return (
     <div ref={containerRef} className="relative min-h-screen pt-24 bg-pure-black">
       {/* Hero Section */}
-      <section className="relative py-20 px-6">
-        <div className="max-w-7xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="mb-8"
-          >
-            <div className="inline-flex items-center space-x-2 glass rounded-full px-6 py-3 mb-8 purple-glow">
-              <ArrowUpDown className="w-5 h-5 text-bright-purple" />
-              <span className="text-bright-purple font-medium">Advanced Crypto Swap Tools</span>
-            </div>
-          </motion.div>
+      <section className="relative py-20 px-6 min-h-screen">
+        <div className="max-w-7xl mx-auto relative h-full">
+          {/* Background 3D Model */}
+          <div className="absolute inset-0 w-full h-full transform-none will-change-auto min-h-[600px]">
+            <SplineViewer scene="https://prod.spline.design/ijCiht39kZHmxLyb/scene.splinecode" background="#000000" />
+          </div>
+          
+          {/* Content Overlay */}
+          <div className="relative z-10 text-center pt-20">
+            <motion.h1
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="swap-finder-title gradient-title text-5xl md:text-7xl font-bold mb-8"
+            >
+              <span className="bg-gradient-to-r from-bright-purple to-light-purple bg-clip-text text-transparent">
+                Swap Finder
+              </span>
+            </motion.h1>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="swap-finder-title gradient-title text-5xl md:text-7xl font-bold mb-8"
-          >
-            <span className="bg-gradient-to-r from-bright-purple to-light-purple bg-clip-text text-transparent">
-              Swap Finder
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-xl text-gray-light max-w-3xl mx-auto mb-12"
-          >
-            Find the best crypto swap rates across multiple DEXs with real-time arbitrage opportunities and optimal
-            routing
-          </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="text-xl text-gray-light max-w-3xl mx-auto mb-12"
+            >
+              Find the best crypto swap rates across multiple DEXs with real-time arbitrage opportunities and optimal
+              routing
+            </motion.p>
+          </div>
         </div>
       </section>
 

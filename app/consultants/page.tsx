@@ -4,6 +4,21 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useRef, useState } from "react"
 import { Star, Calendar, Filter, Search, MapPin, Award, X, BookOpen } from "lucide-react"
 
+// TypeScript declaration for Petra wallet
+declare global {
+  interface Window {
+    aptos?: {
+      connect: () => Promise<any>
+      disconnect: () => Promise<void>
+      account: () => Promise<any>
+      isConnected: () => Promise<boolean>
+      network: () => Promise<string>
+      signAndSubmitTransaction: (payload: any) => Promise<any>
+      waitForTransaction: (hash: string) => Promise<any>
+    }
+  }
+}
+
 const consultants = [
   {
     id: 1,
@@ -112,6 +127,80 @@ export default function ConsultantsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedConsultant, setSelectedConsultant] = useState<number | null>(null)
   const [showRules, setShowRules] = useState(false)
+
+  const handleBooking = async (consultantId: number) => {
+    // Find the consultant
+    const consultant = consultants.find(c => c.id === consultantId)
+    if (consultant) {
+      try {
+        // Check if Petra wallet is available
+        if (typeof window !== 'undefined' && window.aptos) {
+          // Connect to Petra wallet
+          const response = await window.aptos.connect()
+          console.log('Connected to Petra wallet:', response)
+          
+          // Get account information
+          const account = await window.aptos.account()
+          console.log('Account:', account)
+          
+          // Check if connected to testnet
+          const network = await window.aptos.network()
+          console.log('Network:', network)
+          
+          // Prepare payment transaction for Aptos testnet
+          const paymentAmount = parseFloat(consultant.hourlyRate.replace('$', '')) // Extract amount from hourly rate
+          const aptosAmount = paymentAmount * 0.01 // Convert to APT (assuming 1 APT = $100 for demo)
+          
+          // Create transaction payload for payment
+          const transactionPayload = {
+            function: "0x1::coin::transfer",
+            type_arguments: ["0x1::aptos_coin::AptosCoin"],
+            arguments: [
+              "0x0a79213b572ec40e821dede49a03df03cfe13d905937a149049b4e4f374ce6bc", // Proper 64-char Aptos address
+              (aptosAmount * 100000000).toString() // Convert to octas (8 decimal places)
+            ]
+          }
+          
+          // Show payment confirmation
+          const confirmPayment = confirm(
+            `Booking Payment Details:\n\n` +
+            `Consultant: ${consultant.name}\n` +
+            `Expertise: ${consultant.expertise}\n` +
+            `Amount: ${consultant.hourlyRate} (${aptosAmount.toFixed(4)} APT)\n` +
+            `Network: Aptos Testnet\n\n` +
+            `Do you want to proceed with the payment?`
+          )
+          
+          if (confirmPayment) {
+            try {
+              // Submit transaction to testnet
+              const pendingTransaction = await window.aptos.signAndSubmitTransaction(transactionPayload)
+              console.log('Transaction submitted:', pendingTransaction)
+              
+              // Wait for transaction confirmation
+              const result = await window.aptos.waitForTransaction(pendingTransaction.hash)
+              console.log('Transaction confirmed:', result)
+              
+              alert(`Payment successful! Transaction hash: ${pendingTransaction.hash}\n\nYour booking with ${consultant.name} has been confirmed.`)
+            } catch (txError) {
+              console.error('Transaction failed:', txError)
+              alert('Payment failed. Please try again or check your wallet balance.')
+            }
+          } else {
+            alert('Payment cancelled.')
+          }
+          
+        } else {
+          // If Petra wallet is not available, prompt user to install it
+          alert('Petra wallet is not installed. Please install Petra wallet to book sessions.')
+          window.open('https://petra.app/', '_blank')
+        }
+      } catch (error) {
+        console.error('Error connecting to Petra wallet:', error)
+        alert('Failed to connect to Petra wallet. Please try again.')
+      }
+    }
+  }
 
   return (
     <div ref={containerRef} className="relative min-h-screen pt-24 bg-pure-black">
@@ -301,6 +390,7 @@ export default function ConsultantsPage() {
                         Schedule Meet
                       </motion.button>
                       <motion.button
+                        onClick={() => handleBooking(consultant.id)}
                         className="flex-1 bg-transparent border-2 border-bright-purple text-bright-purple py-3 rounded-full font-medium hover:bg-bright-purple hover:text-pure-white transition-all duration-300"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
