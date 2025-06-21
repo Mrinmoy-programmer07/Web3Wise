@@ -382,13 +382,16 @@ export default function ConsultantsPage() {
 
                     {/* CTA Buttons */}
                     <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                      <motion.button
-                        className="flex-1 bg-gradient-to-r from-bright-purple to-light-purple text-pure-white py-3 rounded-full font-medium"
+                      <motion.a
+                        href="https://calendly.com/rsayan570"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 bg-gradient-to-r from-bright-purple to-light-purple text-pure-white py-3 rounded-full font-medium text-center"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
                         Schedule Meet
-                      </motion.button>
+                      </motion.a>
                       <motion.button
                         onClick={() => handleBooking(consultant.id)}
                         className="flex-1 bg-transparent border-2 border-bright-purple text-bright-purple py-3 rounded-full font-medium hover:bg-bright-purple hover:text-pure-white transition-all duration-300"
