@@ -147,22 +147,35 @@ export default function ConsultantsPage() {
               id: c.id,
               name: c.fullName,
               expertise: c.expertise,
-              rating: c.rating,
-              sessions: c.sessions,
+              rating: c.rating || 4.0,
+              sessions: c.sessions || 0,
               hourlyRate: `$${c.hourlyRate}`,
               location: c.location,
-              languages: c.languages,
-              specialties: c.specialties,
-              avatar: c.avatar,
-              color: c.color,
-              verified: c.verified,
-              description: c.description,
+              languages: c.languages || [],
+              specialties: c.specialties || [],
+              avatar: c.avatar || "/placeholder.svg?height=200&width=200",
+              color: c.color || "#8B5CF6",
+              verified: c.verified || false,
+              description: c.description || `Expert in ${c.expertise} with ${c.experience} experience.`,
             }))
-            setConsultants(prev => [...defaultConsultants, ...apiConsultants])
+            // Combine default consultants with API consultants, avoiding duplicates
+            const allConsultants = [...defaultConsultants]
+            apiConsultants.forEach((apiConsultant: any) => {
+              const exists = allConsultants.find(c => c.id === apiConsultant.id)
+              if (!exists) {
+                allConsultants.push(apiConsultant)
+              }
+            })
+            setConsultants(allConsultants)
+          } else {
+            setConsultants(defaultConsultants)
           }
+        } else {
+          setConsultants(defaultConsultants)
         }
       } catch (error) {
         console.error('Error loading consultants:', error)
+        setConsultants(defaultConsultants)
       } finally {
         setIsLoading(false)
       }
@@ -251,19 +264,23 @@ export default function ConsultantsPage() {
       id: newConsultant.id,
       name: newConsultant.fullName,
       expertise: newConsultant.expertise,
-      rating: newConsultant.rating,
-      sessions: newConsultant.sessions,
+      rating: newConsultant.rating || 4.0,
+      sessions: newConsultant.sessions || 0,
       hourlyRate: `$${newConsultant.hourlyRate}`,
       location: newConsultant.location,
-      languages: newConsultant.languages,
-      specialties: newConsultant.specialties,
-      avatar: newConsultant.avatar,
-      color: newConsultant.color,
-      verified: newConsultant.verified,
-      description: newConsultant.description,
+      languages: newConsultant.languages || [],
+      specialties: newConsultant.specialties || [],
+      avatar: newConsultant.avatar || "/placeholder.svg?height=200&width=200",
+      color: newConsultant.color || "#8B5CF6",
+      verified: newConsultant.verified || false,
+      description: newConsultant.description || `Expert in ${newConsultant.expertise} with ${newConsultant.experience} experience.`,
     }
     
-    setConsultants(prev => [...prev, transformedConsultant])
+    // Add the new consultant to the list
+    setConsultants(prev => [transformedConsultant, ...prev])
+    
+    // Close the registration form
+    setShowRegistrationForm(false)
   }
 
   const handleGuidelinesAccept = () => {
