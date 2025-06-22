@@ -6,29 +6,6 @@ import { MessageSquare, Bot, Terminal, Send, Zap, Users, Clock } from "lucide-re
 import SplineViewer from "@/components/spline-viewer"
 import { Suspense } from "react"
 
-function BotAvatar3D() {
-  return (
-    <Float speed={3} rotationIntensity={1} floatIntensity={2}>
-      <group>
-        <mesh>
-          <sphereGeometry args={[0.8, 32, 32]} />
-          <meshStandardMaterial
-            color="#8B5CF6"
-            emissive="#8B5CF6"
-            emissiveIntensity={0.3}
-            metalness={0.8}
-            roughness={0.2}
-          />
-        </mesh>
-        <Text3D font="/fonts/Inter_Bold.json" size={0.3} height={0.05} position={[-0.3, -0.1, 0.81]}>
-          AI
-          <meshStandardMaterial color="#FFFFFF" />
-        </Text3D>
-      </group>
-    </Float>
-  )
-}
-
 const terminalCommands = [
   { command: "$ web3wise --help", output: "Web3Wise AI Assistant v2.0.1" },
   { command: "$ analyze --contract 0x742d35...", output: "✓ Contract analysis complete" },
@@ -67,8 +44,16 @@ export default function BotSupportPage() {
   const [chatInput, setChatInput] = useState("")
   const [isTyping, setIsTyping] = useState(false)
   const terminalRef = useRef<HTMLDivElement>(null)
+  const chatContainerRef = useRef<HTMLDivElement>(null)
   const [messages, setMessages] = useState([
-    { from: "bot", text: "Hello! I am Web3Wise AI. How can I assist you today?" },
+    { 
+      from: "bot", 
+      text: "Hello! I am Web3Wise AI. How can I assist you today?", 
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    },
+  ])
+  const [conversationHistory, setConversationHistory] = useState([
+    { role: "assistant", content: "Hello! I am Web3Wise AI. How can I assist you today?" }
   ])
 
   // Terminal animation
@@ -107,15 +92,71 @@ export default function BotSupportPage() {
     return () => clearInterval(interval)
   }, [])
 
-  const handleSendMessage = () => {
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
+    }
+  }, [messages])
+
+  const handleSendMessage = async () => {
     if (chatInput.trim() === "") return
-    const newMessages = [...messages, { from: "user", text: chatInput }]
-    setMessages(newMessages)
+    
+    const userMessage = chatInput.trim()
     setChatInput("")
-    // Simulate bot response
-    setTimeout(() => {
-      setMessages([...newMessages, { from: "bot", text: "Thinking..." }])
-    }, 1000)
+    
+    // Add user message to chat
+    const newMessages = [...messages, { from: "user", text: userMessage, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]
+    setMessages(newMessages)
+    
+    // Add to conversation history
+    const updatedHistory = [...conversationHistory, { role: "user", content: userMessage }]
+    setConversationHistory(updatedHistory)
+    
+    // Show typing indicator
+    setIsTyping(true)
+    
+    try {
+      // Call the bot support API
+      const response = await fetch('/api/bot-support', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: userMessage,
+          conversationHistory: updatedHistory
+        }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to get response')
+      }
+
+      // Add bot response to chat
+      const botResponse = result.response
+      setMessages([...newMessages, { 
+        from: "bot", 
+        text: botResponse, 
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }])
+      
+      // Add bot response to conversation history
+      setConversationHistory([...updatedHistory, { role: "assistant", content: botResponse }])
+
+    } catch (error) {
+      console.error('Error getting bot response:', error)
+      // Add error message to chat
+      setMessages([...newMessages, { 
+        from: "bot", 
+        text: "Sorry, I'm having trouble connecting right now. Please try again in a moment.", 
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }])
+    } finally {
+      setIsTyping(false)
+    }
   }
 
   return (
@@ -259,7 +300,7 @@ export default function BotSupportPage() {
                 </div>
 
                 {/* Chat Messages */}
-                <div className="p-6 h-80 overflow-y-auto space-y-4">
+                <div ref={chatContainerRef} className="p-6 h-80 overflow-y-auto space-y-4">
                   {messages.map((msg, index) => (
                     <motion.div
                       key={index}
